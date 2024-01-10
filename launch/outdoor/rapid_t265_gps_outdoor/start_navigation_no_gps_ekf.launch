@@ -1,0 +1,28 @@
+<!-- the first thing you have to do retrieve the map based navigation launch -->
+<launch>
+
+  <!-- Run the map server -->
+   <arg name="map_file" default="$(find rapid)/maps/test0.yaml"/>
+   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />   
+
+  <!-- T265 & Base_link tf-->
+   <include file="$(find rapid)/launch/outdoor/rapid_t265_gps_outdoor/bringup.launch" />
+   <!--node pkg="tf" type="static_transform_publisher" name="base2camera" args="0 0 -0.3 0 0 0 1 base_link camera_odom_frame 100" /-->
+
+  <!-- map & T265 tf-->
+   <node pkg="tf" type="static_transform_publisher" name="map2odom" args="0 0 0 0 0 0 1 map odom 50" />
+
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization_node" clear_params="true">
+    <rosparam command="load" file="$(find rapid)/launch/outdoor/rapid_t265_gps_outdoor/robot_localization_no_gps.yaml" />
+  </node>
+
+   <!-- Run Move Base -->
+   <include file="$(find rapid)/launch/outdoor/rapid_t265_gps_outdoor/with_map_move_base.launch" >
+     <arg name="odom_topic" value="odometry/filtered" />
+   </include>
+
+   <!-- Start RVIZ for Localization -->
+   <node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(find rapid)/launch/outdoor/rapid_t265_gps_outdoor/rviz.rviz"/>
+
+</launch>

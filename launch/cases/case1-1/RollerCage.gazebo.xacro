@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<robot name="RollerCage_sim" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!--gazebo reference="base_Link">
+    <material>Gazebo/Blue</material>
+  </gazebo-->
+
+  <gazebo reference="base_link">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+
+  <gazebo reference="Bwheel_link">
+    <material>Gazebo/Red</material>
+  </gazebo>
+
+  <gazebo reference="wheel_link">
+    <material>Gazebo/Red</material>
+  </gazebo>
+
+</robot>

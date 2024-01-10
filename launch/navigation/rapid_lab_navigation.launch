@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Arguments -->
+  <arg name="map_file" default="/home/ryudolf/bag_and_pbstream/catpid/lab_1126.yaml"/>
+  <arg name="open_rviz" default="true"/>
+  <arg name="move_forward_only" default="false"/>
+
+  <!-- rapid model -->
+  <include file="$(find rapid)/launch/bringup/rapid_bringup.launch"/>
+
+  <!-- Map server -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+
+  <!-- sensors -->
+   <node pkg="nodelet" type="nodelet" name="wit_nodelet_manager" args="manager"/>
+   <node pkg="nodelet" type="nodelet" name="wit" args="load wit_node/WitNodelet wit_nodelet_manager" >
+    <param name="port" value="/dev/ttyUSB1" /> 
+    <remap from="gps" to="gps/fix" />
+   </node>
+
+   <node name="imu_tf" pkg="tf"
+	type="static_transform_publisher" args="0.02 0 0.02 0 0 0 1 base_link imu_link 50"/>
+   <node name="gps_tf" pkg="tf"
+	type="static_transform_publisher" args="0.02 0 0.02 0 0 0 1 base_link gps_link 50"/>
+
+   <node name="rplidarNode"          pkg="rplidar_ros"  type="rplidarNode" output="screen">
+	  <param name="serial_port"         type="string" value="/dev/ttyUSB0"/>  
+	  <param name="serial_baudrate"     type="int"    value="256000"/><!--A3 -->
+	  <param name="frame_id"            type="string" value="laser"/>
+	  <param name="inverted"            type="bool"   value="false"/>
+	  <param name="angle_compensate"    type="bool"   value="true"/>
+	  <param name="scan_mode"           type="string" value="Sensitivity"/>
+   </node>
+   
+   <!-- rplidar a3's frame_id = laser/-->
+   <node name="laser" pkg="tf"
+	type="static_transform_publisher" args="0.02 0 0 0 0 0 1 base_link laser 50"/>
+
+
+  <!-- odom_combined -->
+  <include file="$(find robot_pose_ekf)/robot_pose_ekf.launch"/>
+
+
+   <!--localization -->
+   <node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node" args="
+	-configuration_directory
+	   $(find rapid)/cartographer_ros/configuration_files
+        -configuration_basename rapid_local_only_mode.lua" output="screen">
+   </node>
+
+   <!--include file="$(find rapid)/launch/navigation/amcl.launch"/-->
+   
+  <!-- move_base -->
+  <include file="$(find rapid)/launch/navigation/move_base.launch">
+    <arg name="move_forward_only" value="$(arg move_forward_only)"/>
+  </include>
+
+  <!-- rviz -->
+  <group if="$(arg open_rviz)"> 
+    <node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(find rapid)/rviz/rapid_navigation.rviz"/>
+  </group>
+
+<!--node name="map" pkg="tf"
+	type="static_transform_publisher" args="0 0 1.0 1 0 0 0 map base_link 100"/-->
+
+
+</launch>

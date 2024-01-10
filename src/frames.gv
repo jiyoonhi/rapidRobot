@@ -1,0 +1,22 @@
+digraph G {
+"base_footprint" -> "base_link"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 229.427 sec old)\nBuffer length: 0.000 sec\n"];
+"odom_combined" -> "base_footprint"[label="Broadcaster: /robot_pose_ekf\nAverage rate: 61.856 Hz\nMost recent transform: 229.401 ( 0.026 sec old)\nBuffer length: 1.067 sec\n"];
+"base_link" -> "imu_link"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 229.427 sec old)\nBuffer length: 0.000 sec\n"];
+"base_link" -> "laser"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 229.427 sec old)\nBuffer length: 0.000 sec\n"];
+"base_link" -> "zed_camera_center"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 229.427 sec old)\nBuffer length: 0.000 sec\n"];
+"zed_camera_center" -> "zed_left_camera_frame"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 229.427 sec old)\nBuffer length: 0.000 sec\n"];
+"zed_left_camera_frame" -> "zed_left_camera_optical_frame"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 229.427 sec old)\nBuffer length: 0.000 sec\n"];
+"zed_camera_center" -> "zed_right_camera_frame"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 229.427 sec old)\nBuffer length: 0.000 sec\n"];
+"zed_right_camera_frame" -> "zed_right_camera_optical_frame"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 229.427 sec old)\nBuffer length: 0.000 sec\n"];
+"base_footprint" -> "left_wheel_link"[label="Broadcaster: /gazebo\nAverage rate: 61.510 Hz\nMost recent transform: 229.401 ( 0.026 sec old)\nBuffer length: 1.073 sec\n"];
+"base_footprint" -> "right_wheel_link"[label="Broadcaster: /gazebo\nAverage rate: 61.510 Hz\nMost recent transform: 229.401 ( 0.026 sec old)\nBuffer length: 1.073 sec\n"];
+"map" -> "odom_combined"[label="Broadcaster: /amcl\nAverage rate: 76.498 Hz\nMost recent transform: 229.900 ( -0.473 sec old)\nBuffer length: 1.085 sec\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 229.427"[ shape=plaintext ] ;
+ }->"map";
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 229.427"[ shape=plaintext ] ;
+ }->"odom";
+}

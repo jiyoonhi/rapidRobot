@@ -1,0 +1,195 @@
+
+
+///////////////////////////////////////////
+/////     issue tracking for miniRAPID
+///////////////////////////////////////////
+
+
+////////////////////////////////
+///// hardware issue (류동석)
+
+
+[power supply and recharging]
+-배터리 배치/충전 편의성 확충 >> 필요할 때 당장 실험이 용이한 수준으로
+-안정적 배선 정리
+-주행 안전성 확보 (슬립 방지 구조 등)
+-통신 밴드위쓰 확보 (안테나 조정 ) 
+-견고한 센서 고정 
+
+-상시 교체가능한 백업 자비어 구성 (또는 SSD 교체 체계 구축)
+
+///////////////////////////////
+///// middleware issue
+
+-라이다 좌표계 확인 및 일치
+-IMU 좌표계 확인 및 일치 (covariance all zeros --> uncertainty = 0 --> 수정필요)
+-오돔 사용에 대한 방향성 확정 (엔코더? 라이다 오돔? 비주얼이너셜? 제3의 솔루션?)
+
+등
+///////////////////////
+/////  software issue
+
+-안정성 확보 >> 근본적 확보 불가시 각종 충돌시 실행 순서 및 재실행 등 대처법 매뉴얼 확보
+-오도메트리 확보 방향성 확정
+-안정적 주행 방법 2가지 이상 구현 ( 하드웨어 확인 및 기초 데모용(헥터?) / 고정밀 주행용 (카토) )
+
+
+
+
+
+
+
+
+
+
+///////////////////////////////////////////
+/////     technical challenges for step up
+///////////////////////////////////////////
+
+
+[DRyu]
+-stable hardware odom 
+-multi-robot management
+
+
+[JHwang]
+-outdoor EKF Odom/GPS based navigation
+-outdoor path record (GPS base? 3D lidar base?) and playback
+-indoor vision marker based navi
+
+
+
+
+
+
+///////////////////////////////////////////
+/////     
+///////////////////////////////////////////
+
+localizatin 기존 정보(맵)가 있다. vs. mapping 기존 정보(맵)가 없다.
+
+AMCL vs Carto
+
+Gazebo vs Real
+
+Encoder odom (encoder vs encoder + IMU) vs Lidar odom
+
+0. all codes runs at local 
+
+0-1 모터는 잘 되나? 모터 기본 테스트
+--> 
+(term1)roscore
+(term-xavier) roslaunch roboclaw_node roboclaw.launch
+(term2) rostopic pub -r 10 /cmd_vel geometry_msgs/Twist '[0.05, 0.0, 0.0]' '[0.0, 0.0, 0.0]'
+--> publish rate을 20보다 크게 하는 경우 enc %d 오류가 난다. 
+--> move_base 패키지에서 /cmd_vel 을 publish 하는 rate 조정 필요
+--> $ vim ~/rapid/launch/cases/case#-2/params/move_base_params.yaml
+여기서 controller_frequency: 5.0 (default:10.0) 으로 하향했다. (통신장애 등을 우려하여)
+
+
+(term2) watch -n1 rostopic echo /odom
+(temr3) 목표지점에 보내기
+rostopic pub /move_base_simple/goal geometry_msgs/PoseStamped "header:
+  seq: 0
+  stamp:
+    secs: 0
+    nsecs: 0
+  frame_id: 'map'
+pose:
+  position:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0" 
+
+0-2 센서 방향 기본 테스트
+0-3 각종 기본 테스트 쉽게 하기 코드/런치
+
+
+1-1. [sim] AMCL + Localization(predefined map) + Odom(Gazebo ideal encoder) + lidar(gazebo ideal lidar)    
+1-2. [real] AMCL + Localization(predefined map) + Odom(real encoder) + lidar (real lidar)
+
+2-1. [sim] Carto + Localization(predefined map) + Lidar only (gazebo ideal lidar) 
+2-2. [real] Carto + Localization(predefined map) + Lidar only (with real robot)
+
+3-1. [sim] Carto + Localization(predefined map) + Odom(Gazebo ideal encoder) + Lidar only (gazebo ideal lidar) 
+3-2. [real] Carto + Localization(predefined map) + Odom(real encoder) + Lidar only (with real robot)
+
+1-3. [sim] AMCL + Localization(predefined map) + Odom(EKF = Gazebo ideal encoder + IMU) + lidar (gazebo ideal lidar)
+1-4. [real] AMCL + Localization(predefined map) + Odom(EKF = real encoder + IMU) + lidar (real lidar)
+3-3. [sim] Carto + Localization(predefined map) + Odom(EKF = Gazebo ideal encoder + IMU) + lidar (gazebo ideal lidar)
+3-4. [real] Carto + Localization(predefined map) + Odom(EKF = real encoder + IMU) + lidar (with real robot)
+
+
+
+
+
+////////////////////////
+AMCL        /////////////
+bug 수정한 model type으로 다음과 같이 
+odom_model_type : diff --> diff-corrected 로 바꾸고 아래처럼 parameter 줄여야 한다.
+
+    <param name="odom_model_type"           value="diff-corrected"/>
+    <param name="odom_alpha1"               value="0.01"/>
+    <param name="odom_alpha2"               value="0.01"/>
+    <param name="odom_alpha3"               value="0.02"/>
+    <param name="odom_alpha4"               value="0.01"/>
+    <param name="odom_frame_id"             value="$(arg odom_frame_id)"/>
+    <param name="base_frame_id"             value="base_link"/>
+
+이것의 차이가 클지는 모르겠다.
+일단 모든 case폴더의 amcl 코드에 전부 적용함. (1-1, 1-2, 1-3, 1-4)
+/////////////////////////////////////////
+
+
+/////time synchronize 문제/////
+roslaunch nav.launch 실행 시 계속 아래 warning이 뜨면서 costmap이 안 뜸.
+costmap2DROS transform timeout. CUrrent time:, global_pose_stamp: , tolerance: 
+이건 jetson xavier board와 remote PC 간의 시간 SYNC 문제
+--> $ sudo apt-get install ntpdate
+$ sudo ntpdate ntp.ubuntu.com
+--> 해결~
+
+/////////////////////////////////////
+X축 방향의 이동은 Odom 방향과 일치하지만 
+회전 시 반대로 이동하는 걸 보아 y축이 반대.
+--> roboclaw_node/nodes/roboclaw_node.py 파일을 수정.
+
+/////////
+roboclaw_node가 계속 멈추는 현상 --> import Number enc1, enc2 초깃값을 none이 아닌 숫자로 설정
+--> 해결
+////////
+
+
+params/move_base_params.yaml 에서 
+controller_frequency: 2.0 #10.0 --> /cmd_vel topic이 2hz 의 rate으로 publish됨.
+
+//////////////////////////////////
+cartographer localization 기능 활용을 못하는 건지... 맵 내에서 본인 위치를 전혀 찾지 못한다.
+--> lua파일에서 parameter 다시 보기.
+
+
+wlx909f33ef927d
+
+
+sudo tcpdump -i wlx909f33ef927d
+
+
+rostopic echo /lslidar_point_cloud
+
+
+
+
+
+
+
+
+
+
+
+
+

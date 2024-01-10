@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="RollerCage" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="$(find rapid)/urdf/common_properties.xacro"/>
+  <xacro:include filename="$(find rapid)/launch/cases/case1-1/RollerCage.gazebo.xacro"/>
+  <link
+    name="base_footprint_link">
+    <inertial>
+      <origin
+        xyz="-5.8497E-05 0.022743 0.35356"
+        rpy="0 0 0" />
+      <mass
+        value="14.845" />
+      <inertia
+        ixx="2.926"
+        ixy="0.00024486"
+        ixz="0.00035081"
+        iyy="4.0179"
+        iyz="-0.21275"
+        izz="2.451" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://rapid/urdf/RollerCage/meshes/base_footprint_link.STL" />
+      </geometry>
+      <material
+        name="grey">
+        <color
+          rgba="0.2 0.6 1 0.8" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://rapid/urdf/RollerCage/meshes/base_footprint_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-7.9082E-05 0.030741 0.23548"
+        rpy="0 0 0" />
+      <mass
+        value="10.983" />
+      <inertia
+        ixx="2.3953"
+        ixy="0.00022518"
+        ixz="0.00027492"
+        iyy="3.0865"
+        iyz="-0.18324"
+        izz="1.6576" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://rapid/urdf/RollerCage/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="grey">
+        <color
+          rgba="0.2 0.64 1 0.8" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://rapid/urdf/RollerCage/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="base_link_joint"
+    type="fixed">
+    <origin
+      xyz="0 0 0.2055"
+      rpy="0 0 0" />
+    <parent
+      link="base_footprint_link" />
+    <child
+      link="base_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="Bwheel_link">
+    <inertial>
+      <origin
+        xyz="-9.992E-16 -4.996E-16 -0.044995"
+        rpy="0 0 0" />
+      <mass
+        value="1.3176" />
+      <inertia
+        ixx="0.068341"
+        ixy="1.2497E-05"
+        ixz="-1.0754E-17"
+        iyy="0.17321"
+        iyz="2.4293E-17"
+        izz="0.23844" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://rapid/urdf/RollerCage/meshes/Bwheel_link.STL" />
+      </geometry>
+      <material
+        name="grey">
+        <color
+          rgba="0.5 0.5 0.5 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://rapid/urdf/RollerCage/meshes/Bwheel_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Bwheel_link_joint"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="Bwheel_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="wheel_link">
+    <inertial>
+      <origin
+        xyz="5.3069E-14 -4.9766E-14 -0.1293"
+        rpy="0 0 0" />
+      <mass
+        value="2.4877" />
+      <inertia
+        ixx="0.12798"
+        ixy="1.9107E-07"
+        ixz="-2.224E-15"
+        iyy="0.42"
+        iyz="1.9975E-15"
+        izz="0.54004" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://rapid/urdf/RollerCage/meshes/wheel_link.STL" />
+      </geometry>
+      <material
+        name="grey">
+        <color
+          rgba="1 0 0 0.8" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://rapid/urdf/RollerCage/meshes/wheel_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="wheel_link_joint"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="Bwheel_link" />
+    <child
+      link="wheel_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>

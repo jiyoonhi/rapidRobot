@@ -1,0 +1,27 @@
+<!-- Convert the GPS data into Odometry type data 
+"navsat_transform_node" of "robot_localization" package allows you to convert the GPS latitude and longitude into XY coordinates that can be represented in space.
+THIS Launch file will publish "/odometry/gps" topic which has a message type of "nav_msgs/Odometry" -->
+
+
+<launch>
+  <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform_node" clear_params="true">
+
+    <param name="magnetic_declination_radians" value="0"/> 
+    <param name="yaw_offset" value="0"/>
+    <param name="zero_altitude" value="true"/>
+    
+    <param name="broadcast_utm_transform" value="false"/>
+    <param name="publish_filtered_gps" value="false"/>
+    
+    <param name="use_odometry_yaw" value="false"/>
+    <param name="wait_for_datum" value="false"/>
+    
+    <remap from="/imu/data" to="/imu0"/>
+    <remap from="/gps/fix" to="/ublox_gps/fix"/>
+    <!--remap from="/odometry/filtered" to="/orb_slam2_stereo/pose"/--> <!--/odom-->
+    <remap from="/odometry/filtered" to="/vins_estimator/odometry"/> <!--/odom-->
+
+   </node>
+
+</launch>
+

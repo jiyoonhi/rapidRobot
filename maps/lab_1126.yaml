@@ -1,0 +1,9 @@
+image: lab_1126.pgm
+resolution: 0.050000
+#origin: [-7.832861, -6.091971, 0.0000]
+#origin: [8.832861, 0, 1.57]
+origin: [8.832861, 0, 2.2]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+

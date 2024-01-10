@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+  <include file="$(find rplidar_ros)/launch/rplidar_a3.launch"/>
+  <include file="$(find wit_node)/launch/wit.launch"/>
+  <include file="$(find roboclaw_node)/launch/roboclaw.launch"/>
+  <!--include file="$(find pca9685_board)/launch/pca9685_board.launch"/-->
+</launch>

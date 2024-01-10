@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<!--cartographer 2d mapping using odometry produced by scan topic// by jiyoonh @2021-02-05-->
+
+<launch>
+
+   <!-- minirapid1 gazebo model -->c
+   <!--include file="$(find rapid)/launch/navigation/minirapid/simulation/minirapid_bringup-gazebo.launch"/-->
+   <!--real model -->
+   <include file="$(find rapid)/launch/bringup/minirapid_bringup.launch"/>
+
+
+   <!-- mapping -->
+   <node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node" args="
+	-configuration_directory
+	   $(find rapid)/launch/navigation/minirapid/simulation
+        -configuration_basename sim-odom-pub-map.lua" output="screen">
+   </node>
+
+   <node name="cartographer_occupancy_grid_node" pkg="cartographer_ros" type="cartographer_occupancy_grid_node" args="-resolution 0.005" />
+
+   <!--publish odometry using cartographer-->
+   <node pkg="rapid" name="odometry_publisher" type="odometry_publisher"/>
+
+
+   <!-- visualization -->
+   <node name="rviz" pkg="rviz" type="rviz" required="true"
+      args="-d $(find rapid)/cartographer_ros/configuration_files/demo_2d.rviz" />  
+
+
+   <!-- Record data  -->
+   <node pkg="rosbag" type="record" name="rosbag_record_all"
+	   args="-a -o /home/smarthc/bag_and_pbstream/pubodom" /> 
+
+</launch>
+
+

@@ -1,0 +1,41 @@
+<!--?xml version="1.0"?-->
+<launch>
+  <!-- minirapid1 initial position -->
+  <arg name="x1_pos" default="-2.3"/>
+  <arg name="y1_pos" default="-0.2"/>
+  <arg name="z1_pos" default="0.0"/>
+
+  <!-- minirapid2 initial position -->
+  <arg name="x2_pos" default="-1.3"/>
+  <arg name="y2_pos" default="-2.7"/>
+  <arg name="z2_pos" default="0.0"/>
+
+  <!-- laboratory world -->
+  <include file="$(find rapid)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find rapid)/world/warehouse-1.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find rapid)/launch/navigation/minirapid/simulation/minirapid1-2.urdf.xacro" />
+
+  <!-- minirapid 1-->
+  <group ns="minirapid1">
+   <arg name="robot_name"  value="Rapid1" />
+    <param name="tf_prefix" value="minirapid1" />
+    <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf" args="-urdf -model $(arg robot_name) -x $(arg x1_pos) -y $(arg y1_pos) -z $(arg z1_pos) -param /robot_description" respawn="false"/>
+  </group>
+
+  <!-- minirapid 2-->
+  <group ns="minirapid2">
+   <arg name="robot_name"  value="Rapid2" />
+    <param name="tf_prefix" value="minirapid2" />
+    <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf" args="-urdf -model $(arg robot_name) -x $(arg x2_pos) -y $(arg y2_pos) -z $(arg z2_pos) -param /robot_description" respawn="false"/>
+  </group>
+
+</launch>
+
+

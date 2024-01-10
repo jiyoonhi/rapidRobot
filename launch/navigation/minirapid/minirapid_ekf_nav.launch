@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<launch>
+  <param name="/use_sim_time" value="true" />
+
+  <!-- Arguments -->
+  <arg name="map_file" default="$(find rapid)/maps/lab_0119_2.yaml"/>
+  <arg name="open_rviz" default="true"/>
+  <arg name="move_forward_only" default="false"/>
+
+  <!-- minirapid1 model -->
+  <include file="$(find rapid)/launch/bringup/minirapid_bringup.launch"/>
+  <node name="tf_footprint_base" pkg="tf"  type="static_transform_publisher" args="0 0 0.03 0 0 0 base_footprint base_link 40" />
+
+  <!-- Map server -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+
+  <!-- odom_combined -->
+  <!--(1) robot_pose_ekf -->
+  <!--include file="$(find rapid)/launch/navigation/robot_pose_ekf.launch" >
+  <node pkg="rapid" type="robot_pose_ekf_odom.py" name="transform_odom_ekf" /-->
+  
+  <!--(2) robot_localization -->
+  <!--include file="$(find rapid)/launch/navigation/minirapid/minirapid_robot_localization.launch" /-->
+
+  <!--localization -->
+  <!--(1) Cartographer_ros -->
+  <!--node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node" args="
+	-configuration_directory
+	   $(find rapid)/cartographer_ros/configuration_files
+        -configuration_basename ekf.lua" output="screen">
+      <remap from="odom" to="odom_ekf" />
+  </node-->
+
+  <!--(2) AMCL -->
+  <include file="$(find rapid)/launch/navigation/minirapid/amcl_minirapid.launch">
+    <!--remap from="odom" to="odom_ekf" /-->
+  </include>
+ 
+  <!-- move_base -->
+  <include file="$(find rapid)/launch/navigation/move_base_global-planner.launch">
+    <arg name="move_forward_only" value="$(arg move_forward_only)"/>
+    <arg name="odom_topic" value="odom_ekf" />
+  </include>
+
+
+  <!-- rviz -->
+  <group if="$(arg open_rviz)"> 
+    <node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(find rapid)/rviz/minirapid_navigation.rviz"/>
+  </group>
+
+</launch>

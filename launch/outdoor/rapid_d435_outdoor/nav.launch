@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Arguments -->
+  <arg name="map_file" default="$(find rapid)/maps/test0.yaml"/>
+  <arg name="open_rviz" default="true"/>
+  <arg name="move_forward_only" default="false"/>
+
+  <!--(no gps) robot_pose_ekf -->
+  <include file="$(find rapid)/launch/outdoor/rapid_d435_outdoor/robot_pose_ekf.launch" />
+  <node pkg="rapid" type="robot_pose_ekf_odom.py" name="transform_odom_ekf" />
+
+   <!-- Run the map server -->
+   <arg name="map_file" default="$(find rapid)/maps/empty_map.yaml"/>
+   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />   
+
+   <!-- Run Move Base -->
+   <include file="$(find rapid)/launch/outdoor/rapid_d435_outdoor/with_map_move_base.launch">
+    <remap from="odometry/filtered" to="odom_ekf"/>
+   </include>
+
+   <!-- Start RVIZ for Localization -->
+   <include file="$(find rapid)/launch/outdoor/rapid_d435_outdoor/bringup.launch" />
+
+   <group if="$(arg open_rviz)"> 
+     <node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(find rapid)/launch/cases/case3-4/rviz.rviz"/>
+   </group>
+
+</launch>

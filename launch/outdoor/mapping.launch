@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<!--cartographer 2d mapping using rplidar by jiyoonh @2021-03-02-->
+
+<launch>
+
+   <!-- minirapid1 model -->
+   <include file="$(find rapid)/launch/outdoor/case1-3/bringup.launch"/>
+
+   <node name="map_tf" pkg="tf"
+	type="static_transform_publisher" args="0 0 0 0 0 0 1 map odom 50"/>
+   <!-- mapping -->
+   <node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node" args="
+	-configuration_directory
+	   $(find rapid)/launch/outdoor
+        -configuration_basename mapping.lua" output="screen">
+      <remap from="/ublox_gps/fix" to="fix"/>
+   </node>
+
+   <node name="cartographer_occupancy_grid_node" pkg="cartographer_ros" type="cartographer_occupancy_grid_node" args="-resolution 0.005" />
+
+   <node name="rviz" pkg="rviz" type="rviz" required="true"
+      args="-d $(find rapid)/cartographer_ros/configuration_files/demo_2d.rviz" />  
+
+
+   <!-- Record data  -->
+   <!--node pkg="rosbag" type="record" name="rosbag_record_laser"
+	   args="-O subset /scan" /--> 
+
+
+</launch>
+
+

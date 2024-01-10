@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+  <include file="$(find rapid)/launch/cases/case1-1/sim-one-move_base.launch">
+  <arg name="robot_namespace" value="minirapid1" />
+  </include>
+
+  <include file="$(find rapid)/launch/cases/case1-1/sim-one-move_base.launch">
+  <arg name="robot_namespace" value="minirapid2" />
+  </include>
+</launch>	

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="RollerCage" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="$(find rapid)/urdf/common_properties.xacro"/>
+  <xacro:include filename="$(find rapid)/launch/cases/case1-1/RollerCage.gazebo.xacro"/>
+  <link
+    name="base_footprint_link">
+    <inertial>
+      <origin
+        xyz="-5.84965303980223E-05 0.0227434250593192 0.353561495542512"
+        rpy="0 0 0" />
+      <mass
+        value="14.8451804636581" />
+      <inertia
+        ixx="2.92598826181675"
+        ixy="0.00024486289296213"
+        ixz="0.00035080797454138"
+        iyy="4.01792191615034"
+        iyz="-0.212754124271764"
+        izz="2.45100259006472" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://rapid/urdf/RollerCage/meshes/base_footprint_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://rapid/urdf/RollerCage/meshes/base_footprint_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="Empty_Link">
+    <inertial>
+      <origin
+        xyz="-5.84965303979113E-05 0.0227434250593191 0.14806149554251"
+        rpy="0 0 0" />
+      <mass
+        value="14.8451804636581" />
+      <inertia
+        ixx="2.92598826181673"
+        ixy="0.000244862892962184"
+        ixz="0.000350807974540665"
+        iyy="4.01792191615032"
+        iyz="-0.212754124271764"
+        izz="2.45100259006472" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://rapid/urdf/RollerCage/meshes/Empty_Link.STL" />
+      </geometry>
+      <material>
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://rapid/urdf/RollerCage/meshes/Empty_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="base_link_joint"
+    type="fixed">
+    <origin
+      xyz="0 0 0.2055"
+      rpy="0 0 0" />
+    <parent
+      link="base_footprint_link" />
+    <child
+      link="Empty_Link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>

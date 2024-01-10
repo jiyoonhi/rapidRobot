@@ -1,0 +1,30 @@
+<!-- the first thing you have to do retrieve the map based navigation launch -->
+<launch>
+
+  <!-- Run the map server -->
+   <arg name="map_file" default="$(find rapid)/maps/test0.yaml"/>
+   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />   
+
+  <!-- T265 & Base_link tf-->
+   <include file="$(find rapid)/launch/outdoor/test/bringup2.launch" />
+   <node pkg="tf" type="static_transform_publisher" name="camera2base" args="0 0 -0.3 0 0 0 1 camera_link base_link 100" />
+   <node pkg="tf" type="static_transform_publisher" name="map2camera" args="0 0 0 0 0 0 1 map camera_odom_frame 100" />
+
+
+  <!-- AMCL -->
+  <!--include file="$(find rapid)/launch/outdoor/test/amcl.launch">
+     <arg name="initial_pose_x" value="0.0"/>
+     <arg name="initial_pose_y" value="0.0"/>
+     <arg name="initial_pose_a" value="0.0"/>
+  </include-->
+
+   <!-- Run Move Base -->
+   <include file="$(find rapid)/launch/outdoor/test/with_map_move_base.launch" >
+     <arg name="odom_topic" value="/camera/odom/sample" />
+   </include>
+
+   <!-- Start RVIZ for Localization -->
+   <node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(find rapid)/launch/outdoor/test/rviz.rviz"/>
+
+</launch>

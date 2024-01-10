@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Bringup two turtlebot3s - laptop/remotepc portion -->
+
+  <!-- initial position -->
+  <arg name="init_x1" default="-2.3"/>
+  <arg name="init_y1" default="-0.2"/>
+  <arg name="init_a1" default="0.0"/>
+
+  <arg name="init_x2" default="-1.3"/>
+  <arg name="init_y2" default="-2.7"/>
+  <arg name="init_a2" default="0.0"/>
+
+  <!-- Arguments -->
+  <arg name="map_file" default="$(find rapid)/maps/laboratoryv1.yaml"/>
+  <arg name="open_rviz" default="true"/>
+  <arg name="move_forward_only" default="false"/>
+
+  <!-- minirapid1 model -->
+  <arg name="urdf_file" default="$(find xacro)/xacro --inorder '$(find rapid)/launch/cases/case1-1/minirapid1.urdf.xacro'" />
+  <param name="robot_description" command="$(arg urdf_file)" />
+
+  <!-- Map server -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+
+  <!-- minirapid 1 -->
+  <group ns="minirapid1">
+    <arg name="robot_name"  value="Rapid1" />
+    <!-- Robot State Publisher -->
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+      <param name="publish_frequency" type="double" value="50.0" />
+      <param name="tf_prefix" value="minirapid1"/>
+    </node>
+    <!-- Joint State Publisher -->
+    <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher">
+      <param name="use_gui" value="False" />
+      <param name="tf_prefix" value="minirapid1"/>
+      <param name="robot_description" command="$(arg urdf_file)" />
+    </node>
+
+    <!-- AMCL -->
+    <node pkg="amcl" type="amcl" name="amcl">
+      <!-- Load default parameters for turtlebot -->
+      <param name="initial_pose_x" value="$(arg init_x1)"/>
+      <param name="initial_pose_y" value="$(arg init_y1)"/>
+      <param name="initial_pose_a" value="$(arg init_a1)"/>
+
+      <param name="odom_frame_id"  value="minirapid1/odom"/>
+      <param name="base_frame_id"  value="minirapid1/base_footprint"/>
+
+      <!-- Use the single map server -->
+      <remap from="static_map" to="/static_map"/>
+    </node>
+  </group>
+
+
+  <!-- minirapid 2 -->
+  <group ns="minirapid2">
+    <arg name="robot_name"  value="Rapid2" />
+    <!-- Robot State Publisher -->
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+      <param name="publish_frequency" type="double" value="50.0" />
+      <param name="tf_prefix" value="minirapid2"/>
+    </node>
+    <!-- Joint State Publisher -->
+    <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher">
+      <param name="use_gui" value="False" />
+      <param name="tf_prefix" value="minirapid2"/>
+      <param name="robot_description" command="$(arg urdf_file)" />
+    </node>
+
+    <!-- AMCL -->
+    <node pkg="amcl" type="amcl" name="amcl">
+      <!-- Load default parameters for turtlebot -->
+      <param name="initial_pose_x" value="$(arg init_x2)"/>
+      <param name="initial_pose_y" value="$(arg init_y2)"/>
+      <param name="initial_pose_a" value="$(arg init_a2)"/>
+
+      <param name="odom_frame_id"  value="minirapid2/odom"/>
+      <param name="base_frame_id"  value="minirapid2/base_footprint"/>
+
+      <!-- Use the single map server -->
+      <remap from="static_map" to="/static_map"/>
+    </node>
+  </group>
+
+
+  <!-- Move Base -->
+  <include file="$(find rapid)/launch/cases/case1-1/sim-multi-move_base.launch" />
+
+  <!-- rviz -->
+  <group if="$(arg open_rviz)"> 
+    <node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(find rapid)/rviz/minirapid_multi_navigation.rviz"/>
+  </group>
+</launch>

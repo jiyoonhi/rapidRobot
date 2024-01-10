@@ -1,0 +1,23 @@
+<!-- the first thing you have to do retrieve the map based navigation launch -->
+<launch>
+
+   <!-- Run navsat "GPS" to "odometry" conversion -->
+   <include file="$(find rapid)/launch/outdoor/rapid_t265_gps_outdoor/start_navsat.launch" />
+
+   <!-- Run the ekf for map to odom config -->
+   <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization_node" clear_params="true">
+     <rosparam command="load" file="$(find rapid)/launch/outdoor/rapid_t265_gps_outdoor/robot_localization_with_gps.yaml" />
+   </node>
+
+   <!-- Run the map server -->
+   <arg name="map_file" default="$(find rapid)/maps/empty_map.yaml"/>
+   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />   
+
+   <!-- Run Move Base -->
+   <include file="$(find rapid)/launch/outdoor/rapid_t265_gps_outdoor/with_map_move_base.launch" />
+
+   <!-- Start RVIZ for Localization -->
+   <include file="$(find rapid)/launch/outdoor/rapid_t265_gps_outdoor/bringup.launch" />
+   <include file="$(find rapid)/launch/outdoor/rapid_t265_gps_outdoor/rviz_satellite.launch" />
+
+</launch>

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+  <param name="tb3_model" value="$(arg model)"/>
+  <include file="$(find rapid)/launch/includes/description.launch.xml">
+    <arg name="model" value="$(arg model)" />
+  </include>
+
+  <arg name="x_pos" default="0.0"/>
+  <arg name="y_pos" default="0.0"/>
+  <arg name="z_pos" default="0.0"/>
+
+  <include file="$(find rapid)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/turtlebot3_stage_2.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>  
+
+  <node pkg="turtlebot3_fake" type="turtlebot3_fake_node" name="turtlebot3_fake_node" output="screen" />
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model turtlebot3_waffle_pi -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+    <param name="publish_frequency" type="double" value="50.0" />
+  </node>
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find turtlebot3_fake)/rviz/turtlebot3_fake.rviz"/>
+</launch>

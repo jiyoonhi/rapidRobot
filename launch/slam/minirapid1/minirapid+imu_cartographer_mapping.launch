@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+
+<!--cartographer 2d mapping using rplidar by jiyoonh @2020-11-04-->
+
+<launch>
+
+     <!-- minirapid1 model -->
+   <include file="$(find rapid)/launch/bringup/minirapid_bringup.launch"/>
+   <node name="tf_footprint_base" pkg="tf"  type="static_transform_publisher" args="0 0 -0.03 0 0 0 base_link base_footprint 40" />
+
+   <!--node name="rplidarNode"          pkg="rplidar_ros"  type="rplidarNode" output="screen">
+	  <param name="serial_port"         type="string" value="/dev/ttyUSB0"/>  
+	  <param name="serial_baudrate"     type="int"    value="256000"/>
+	  <param name="frame_id"            type="string" value="laser"/>
+	  <param name="inverted"            type="bool"   value="false"/>
+	  <param name="angle_compensate"    type="bool"   value="true"/>
+	  <param name="scan_mode"           type="string" value="Sensitivity"/>
+   </node-->
+
+  <!-- sensors -->
+   <!--node pkg="nodelet" type="nodelet" name="wit_nodelet_manager" args="manager"/>
+   <node pkg="nodelet" type="nodelet" name="wit" args="load wit_node/WitNodelet wit_nodelet_manager" >
+    <param name="port" value="/dev/ttyUSB1" /> 
+    <remap from="gps" to="gps/fix" />
+   </node-->
+
+   <!--node name="imu_tf" pkg="tf"
+	type="static_transform_publisher" args="0.0 0 0.088 0 0 0 1 base_link imu_link 50"/-->
+
+   <!--node name="laser" pkg="tf"
+	type="static_transform_publisher" args="0.07 0 0 0 0 0 1 base_link laser 50"/-->
+
+   <!--node pkg="rapid" name="inverse_sign"/-->
+
+
+   <node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node" args="
+	-configuration_directory
+	   $(find rapid)/cartographer_ros/configuration_files
+        -configuration_basename minirapid_lidar_imu.lua" output="screen">
+   </node>
+
+   <node name="cartographer_occupancy_grid_node" pkg="cartographer_ros" type="cartographer_occupancy_grid_node" args="-resolution 0.005" />
+
+   <node name="rviz" pkg="rviz" type="rviz" required="true"
+      args="-d $(find rapid)/cartographer_ros/configuration_files/demo_2d.rviz" />  
+
+
+   <!-- Record data  -->
+   <node pkg="rosbag" type="record" name="rosbag_record_all"
+	   args="-a -o /home/smarthc/bag_and_pbstream/test00" /> 
+
+
+</launch>
+
+
